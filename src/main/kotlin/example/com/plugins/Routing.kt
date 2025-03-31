@@ -3,17 +3,16 @@ package example.com.plugins
 import example.com.models.Spot
 import example.com.repositories.SpotRepository
 import example.com.services.SpotService
+import io.github.jan.supabase.SupabaseClient
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.application.Application
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.sql.Connection
 
-fun Application.configureRouting() {
-    val dbConnection: Connection = connectToPostgres(embedded = true)
-    val spotRepository = SpotRepository(dbConnection) // Pass connection
+fun Application.configureRouting(supabaseClient: SupabaseClient) {
+    val spotRepository = SpotRepository(supabaseClient) // Pass connection
     val spotService = SpotService(spotRepository) // Pass repository
 
     routing {

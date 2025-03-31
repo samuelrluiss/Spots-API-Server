@@ -39,4 +39,16 @@ dependencies {
     implementation("io.ktor:ktor-server-config-yaml")
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    implementation("io.ktor:ktor-client-cio:2.3.3") // CIO Engine (recommended for server-side Ktor)
+    // OR use OkHttp:
+    // implementation("io.ktor:ktor-client-okhttp:2.3.3")
+
+    implementation("io.ktor:ktor-client-core:2.3.3") // Required core HTTP client
+    implementation("org.postgresql:postgresql:42.5.4") // PostgreSQL driver
+
+
+    implementation(platform("io.github.jan-tennert.supabase:bom:2.6.0"))
+    implementation("io.github.jan-tennert.supabase:gotrue-kt")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
 }

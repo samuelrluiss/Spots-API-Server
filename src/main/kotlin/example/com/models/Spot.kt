@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class Spot(
-    val id: String,
+    val id: Int? = null,
     val userId: String,
     val address: String,
     val latitude: String,
