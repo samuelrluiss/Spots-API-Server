@@ -3,6 +3,7 @@ package example.com.plugins
 import example.com.models.Spot
 import example.com.repositories.AuthRepository
 import example.com.repositories.SpotRepository
+import example.com.services.AuthService
 import example.com.services.SpotService
 import io.github.jan.supabase.SupabaseClient
 import io.ktor.http.*
@@ -13,9 +14,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting(supabaseClient: SupabaseClient) {
-    val spotRepository = SpotRepository(supabaseClient) // Pass connection
-    val authRepository = AuthRepository(supabaseClient) // Pass connection
-    val spotService = SpotService(spotRepository) // Pass repository
+    val spotRepository = SpotRepository(supabaseClient)
+    val authRepository = AuthRepository(supabaseClient)
+
+    val spotService = SpotService(spotRepository)
+    val authService = AuthService(authRepository)
 
     routing {
         //Login
@@ -25,7 +28,7 @@ fun Application.configureRouting(supabaseClient: SupabaseClient) {
                 val email = credentials["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing email")
                 val password = credentials["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing password")
 
-                authRepository.signUpUser(email, password)
+                authService.signUpUser(email, password)
                 call.respond(HttpStatusCode.OK, "Login successful")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "Error during login: ${e.localizedMessage}")
@@ -38,8 +41,8 @@ fun Application.configureRouting(supabaseClient: SupabaseClient) {
                 val email = credentials["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing email")
                 val password = credentials["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing password")
 
-                authRepository.signInUser(email, password)
-                call.respond(HttpStatusCode.OK, "Login successful")
+                authService.signInUser(email, password)
+                call.respond(HttpStatusCode.OK, "Login successful for " + authService.getUserId())
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "Error during login: ${e.localizedMessage}")
             }

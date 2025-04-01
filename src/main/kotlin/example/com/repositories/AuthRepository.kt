@@ -5,6 +5,7 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 
 class AuthRepository(private val supabase: SupabaseClient) {
+    var userId: String? = null
     suspend fun signUpUser(emailAddress: String, passwordKey: String) {
         supabase.auth.signUpWith(Email) {
             email = emailAddress
@@ -13,10 +14,10 @@ class AuthRepository(private val supabase: SupabaseClient) {
     }
 
     suspend fun signInUser(email: String, password: String) {
-        val x = supabase.auth.signInWith(Email) {
+        supabase.auth.signInWith(Email) {
             this.email = email
             this.password = password
         }
-        println(x)
+        userId = supabase.auth.currentUserOrNull()?.id
     }
 }
