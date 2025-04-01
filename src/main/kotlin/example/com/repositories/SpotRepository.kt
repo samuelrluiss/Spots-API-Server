@@ -25,18 +25,33 @@ class SpotRepository(private val supabase: SupabaseClient) {
 
     // Update a spot in the database
     suspend fun update(spot: Spot): Boolean = runBlocking {
-        supabase.from("spots")
-            .update(spot) {
-
+        val response = supabase.from("spots").update({
+            set("userId", spot.userId)
+            set("address", spot.address)
+            set("latitude", spot.latitude)
+            set("longitude", spot.longitude)
+            set("leavingAt", spot.leavingAt)
+            set("createdAt", spot.createdAt)
+            set("status", spot.status)
+        }) {
+            filter {
+                spot.id?.let { eq("id", it) } // Ensure only the correct spot is updated
             }
-        return@runBlocking true
+        }
+
+        return@runBlocking true// Check if update was successful
     }
+
+
 
     // Delete a spot from the database
     suspend fun delete(id: Int): Boolean = runBlocking {
         val response = supabase.from("spots")
-            .delete {
-                    }
+            .delete(){
+                filter {
+                    eq("id", id)
+                }
+            }
         return@runBlocking true
     }
 }

@@ -1,6 +1,7 @@
 package example.com.plugins
 
 import example.com.models.Spot
+import example.com.repositories.AuthRepository
 import example.com.repositories.SpotRepository
 import example.com.services.SpotService
 import io.github.jan.supabase.SupabaseClient
@@ -13,9 +14,38 @@ import io.ktor.server.routing.*
 
 fun Application.configureRouting(supabaseClient: SupabaseClient) {
     val spotRepository = SpotRepository(supabaseClient) // Pass connection
+    val authRepository = AuthRepository(supabaseClient) // Pass connection
     val spotService = SpotService(spotRepository) // Pass repository
 
     routing {
+        //Login
+        post("/signUp") {
+            try {
+                val credentials = call.receive<Map<String, String>>()
+                val email = credentials["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing email")
+                val password = credentials["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing password")
+
+                authRepository.signUpUser(email, password)
+                call.respond(HttpStatusCode.OK, "Login successful")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error during login: ${e.localizedMessage}")
+            }
+        }
+
+        post("/signIn") {
+            try {
+                val credentials = call.receive<Map<String, String>>()
+                val email = credentials["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing email")
+                val password = credentials["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing password")
+
+                authRepository.signInUser(email, password)
+                call.respond(HttpStatusCode.OK, "Login successful")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error during login: ${e.localizedMessage}")
+            }
+        }
+
+        //Spots
         get("/spots") {
             try {
                 val spots = spotService.getAllSpots()
